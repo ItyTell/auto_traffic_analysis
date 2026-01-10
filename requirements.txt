@@ -1,1 +1,10 @@
-# cv2
+
+opencv-python
+ultralytics
+numpy
+paddlepaddle
+paddleocr
+lapx>=0.5.2  
+filterpy     
+pyyaml
+tqdm
