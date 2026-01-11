@@ -18,26 +18,25 @@ class RTSPStreamReader:
 
     def update(self):
         while not self.stopped:
-            if not self.stream.isOpened():
-                print("Помилка: Стрім не відкрився.")
-                self.stopped = True
-                break
-            
-            try:
-                # Читаємо кадр
-                ret, frame = self.stream.read()
-                if ret:
-                    self.ret = ret
-                    self.frame = frame
-                else:
-                    # Якщо потік перервався, пробуємо перепідключитися або чекаємо
-                    time.sleep(0.1)
-            except Exception as e:
-                print(f"Критична помилка зчитування: {e}")
-                self.stopped = True
-                break
+            if not self.stream or not self.stream.isOpened():
+                time.sleep(0.5)
+                continue
                 
-            time.sleep(self.timeout)
+            try:
+                if self.stream.grab():
+                    ret, frame = self.stream.retrieve()
+                    if ret:
+                        self.frame = frame
+                        self.ret = True
+                else:
+                    time.sleep(0.1)
+                    
+            except cv2.error as e:
+                #print(f"OpenCV Error: {e}")
+                time.sleep(1)
+            except Exception as e:
+                print(f"Reading error: {e}")
+                break
 
     def get_frame(self):
         return self.ret, self.frame
@@ -50,7 +49,7 @@ class RTSPStreamReader:
 
 if __name__ == "__main__":
     URL = "rtsp://localhost:8554/live"
-    print(f"Запуск тесту потоку: {URL}")
+    print(f"Testing the stream: {URL}")
     reader = RTSPStreamReader(URL)
     
     try:
@@ -60,14 +59,14 @@ if __name__ == "__main__":
             if ret and frame is not None:
                 cv2.imshow("RTSP Reader Test", frame)
             else:
-                print("Очікування кадру...")
+                print("Wating for the stream...")
                 time.sleep(0.5)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
     except KeyboardInterrupt:
-        print("Зупинка користувачем...")
+        print("Stopped by the user...")
     finally:
         reader.stop()
         cv2.destroyAllWindows()
-        print("Потік закрито.")
+        print("The stream has been closed.")
