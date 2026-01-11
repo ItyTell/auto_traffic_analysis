@@ -39,7 +39,7 @@ pip install -r requirements.txt
 ### Використовуйте main.py з аргументом --source для вказання камери:
 
 ```Bash
-python main.py --source "rtsp://ваш_потік" --skip 0.05
+python main.py --source "rtsp://ваш_потік" --skip 0.5
 ```
 
 Доступні аргументи:
