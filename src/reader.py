@@ -3,7 +3,7 @@ import threading
 import time
 
 class RTSPStreamReader:
-    def __init__(self, rtsp_url):
+    def __init__(self, rtsp_url, timeout=0.5):
         self.stream = cv2.VideoCapture(rtsp_url)
         self.stream.set(cv2.CAP_PROP_BUFFERSIZE, 1)
         
@@ -14,21 +14,38 @@ class RTSPStreamReader:
         self.thread = threading.Thread(target=self.update, args=())
         self.thread.daemon = True
         self.thread.start()
+        self.timeout = timeout
 
     def update(self):
         while not self.stopped:
             if not self.stream.isOpened():
+                print("Помилка: Стрім не відкрився.")
                 self.stopped = True
-            else:
-                self.ret, self.frame = self.stream.read()
-            time.sleep(0.01)
+                break
+            
+            try:
+                # Читаємо кадр
+                ret, frame = self.stream.read()
+                if ret:
+                    self.ret = ret
+                    self.frame = frame
+                else:
+                    # Якщо потік перервався, пробуємо перепідключитися або чекаємо
+                    time.sleep(0.1)
+            except Exception as e:
+                print(f"Критична помилка зчитування: {e}")
+                self.stopped = True
+                break
+                
+            time.sleep(self.timeout)
 
     def get_frame(self):
         return self.ret, self.frame
 
     def stop(self):
         self.stopped = True
-        self.stream.release()
+        if self.stream.isOpened():
+            self.stream.release()
 
 
 if __name__ == "__main__":
