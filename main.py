@@ -1,6 +1,6 @@
 
 import os
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+#os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE" - I have some issues with this on my machine, not needed for others
 import cv2
 import time
 import argparse
@@ -49,8 +49,38 @@ def run_analytics(rtsp_url, timeout=0.1, time_skip=0.5):
         reader.stop()
         cv2.destroyAllWindows()
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--source", type=str, default="rtsp://127.0.0.1:8554/live")
+    parser = argparse.ArgumentParser(description="Real-time Traffic Analytics System")
+    
+    parser.add_argument(
+        "--source", 
+        type=str, 
+        default="rtsp://127.0.0.1:8554/live",
+        help="Path to the RTSP camera stream"
+    )
+    
+    parser.add_argument(
+        "--skip", 
+        type=float, 
+        default=0.05, 
+        help="Delay between frames to optimize CPU/GPU load (seconds)"
+    )
+
+    parser.add_argument(
+        "--timeout", 
+        type=float, 
+        default=0.1, 
+        help="Frame acquisition timeout"
+    )
+
     args = parser.parse_args()
-    run_analytics(args.source)
+
+    print(f"Starting stream analysis: {args.source}")
+    print("Press 'q' to exit.")
+
+    run_analytics(
+        rtsp_url=args.source, 
+        timeout=args.timeout, 
+        time_skip=args.skip
+    )

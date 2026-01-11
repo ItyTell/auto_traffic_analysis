@@ -1,10 +1,7 @@
 
+ultralytics>=8.0.0
 opencv-python
-ultralytics
+easyocr
 numpy
-paddlepaddle
-paddleocr
-lapx>=0.5.2  
-filterpy     
-pyyaml
-tqdm
+torch
+torchvision
