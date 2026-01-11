@@ -29,7 +29,8 @@
 ### 1. Встановлення залежностей
 Переконайтеся, що у вас встановлено Python 3.8+ та виконайте команду:
 ```bash
-pip install -r requirements.txt```
+pip install -r requirements.txt
+```
 
 
 ## Запуск програми
@@ -38,7 +39,8 @@ pip install -r requirements.txt```
 ### Використовуйте main.py з аргументом --source для вказання камери:
 
 ```Bash
-python main.py --source "rtsp://ваш_потік" --skip 0.05 ```
+python main.py --source "rtsp://ваш_потік" --skip 0.05
+```
 
 Доступні аргументи:
 
